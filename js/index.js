@@ -39,28 +39,64 @@ var totalCost = 0;
 //event listener for the form submit, which calls all of the validation methods
 form.addEventListener('submit', (e)=>{
 e.preventDefault();
-validateUserName();
-validateUserActivities();
-validateUserEmail();
-validateCreditCard ();
-validateZipCode();
-valideCvv();
+checkErrors();
+
 });
 
+//validates. Calls the validation methos. If there are no errors it will submit.
+checkErrors = () =>{
+var errors = false;
+
+if(paymentmethod.value ==='credit card'){
+if (
+  validateUserName()  ||
+  validateUserActivities() ||
+  validateUserEmail()  ||
+  validateCreditCard () ||
+  validateZipCode()  ||
+  validateCvv()
+){
+  errors=true;
+}
+}else{
+
+  if (
+    validateUserName()  ||
+    validateUserActivities() ||
+    validateUserEmail()
+
+  ){
+    errors=true;
+  }
+
+}
+
+if(!errors){
+  $('#form').submit();
+}
+
+}
+
+
 //make sure the cvv is 3 characters - show/hide the error message
-valideCvv= () =>{
-  if(userCvv.value.length !==3){
+validateCvv= () =>{
+  if(userCvv.value.length >3 || userCvv.value.length <3){
   $('#cvv-error').show();
+  return true;
 }else{
   $('#cvv-error').hide();
+  return false;
 }
 }
+
 //make sure the zip code is 5 characters - show/hide the error message
 validateZipCode = () =>{
-  if(userZip.value.length<5){
+  if(userZip.value.length >5 || userZip.value.length <5){
     $('#zip-error').show();
+    return true;
   }else{
     $('#zip-error').hide();
+    return false;
   }
 }
 
@@ -69,8 +105,10 @@ validateUserName =()=>{
   if(userName.value === ''){
        $('#name-error').show();
        $('#name').focus();
+         return true;
   }else{
       $('#name-error').hide();
+      return false;
   }
 }
 
@@ -79,8 +117,10 @@ validateUserEmail =()=>{
 
 if(!userEmail.value.includes("@") || !userEmail.value.includes('.com')){
   $('#email-error').show();
+    return true;
 }else {
   $('#email-error').hide();
+    return false;
 }
 
 }
@@ -98,8 +138,10 @@ userEmail.addEventListener('keyup',(e)=>{
 validateUserActivities = () =>{
   if(totalCost === 0){
   $('#activities-error').show();
+    return true;
 }else{
-    $('#activities-error').hide()
+    $('#activities-error').hide();
+      return false;
   }
 }
 
@@ -111,12 +153,15 @@ if(ccNum.length >0  && ccNum.length < 13 || ccNum.length > 16){
   $('#cc-error').html('Enter a 13 - 16 digit number');
      $('#cc-error').hide();
      $('#cc-error').show();
+       return true;
 }else if(ccNum.length === 0){
      $('#cc-error').html('Enter valid card number');
      $('#cc-error').hide();
      $('#cc-error').show();
+      return true;
 }else {
      $('#cc-error').hide();
+       return false;
 }
 
 }
@@ -214,8 +259,6 @@ if(isChecked){
 });
 
 
-
-
 //helper function to calculate attendance fee
 function attendanceFee(cost){
 $('#cost').html(cost);
@@ -234,10 +277,19 @@ paymentmethod.addEventListener('change',(e) =>{
           $('#paypal').show();
           $('#credit-card').hide();
           $('#bitcoin').hide();
+          resetCreditCard();
     }else{
       $('#bitcoin').show();
       $('#credit-card').hide();
       $('#paypal').hide();
-
+       resetCreditCard();
     }
 });
+
+//reset the credit card fields if user selects other payment method
+resetCreditCard = () =>{
+  $('#cc-num').val('');
+  $('#cvv').val('');
+  $('#zip').val('');
+
+}
