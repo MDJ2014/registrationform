@@ -47,6 +47,16 @@ checkErrors();
 checkErrors = () =>{
 var errors = false;
 
+validateUserName();
+validateUserActivities();
+validateUserEmail();
+validateCreditCard();
+validateZipCode();
+validateCvv();
+
+
+
+
 if(paymentmethod.value ==='credit card'){
 if (
   validateUserName()  ||
